@@ -2,9 +2,11 @@ import csv
 
 # use .open to open files and return a file object
 rows = []
-with open("SampleData0.csv", 'r') as file:
+numbersCalled = []
+with open("data/SampleData0.csv") as file:
     csvreader = csv.reader(file)
-    numbersCalled = next(csvreader)
+    numbersCalled = next(csvreader) # first row is different than the others
+
     for row in csvreader:
         rows.append(row)
     # The readlines method returns all the lines in a file as a list. Each item of the list is a row of our CSV file. 
