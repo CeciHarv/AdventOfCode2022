@@ -42,6 +42,7 @@ def convertBinToDec(binDigitArray):
             binPlaceValue = pow(numBinDigits, 2)
             decValue += binPlaceValue
         numBinDigits -= 1
+    print(decValue)
     return decValue
 
 for index, char in enumerate(reportOutput[0]):
@@ -55,4 +56,13 @@ print(gammaRateDec * epsilonRateDec)
 
 print(gammaRate)
 print(epsilonRate)
+
+
+
+
+
+
+
+
+
 
