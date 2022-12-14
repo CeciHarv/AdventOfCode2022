@@ -1,0 +1,142 @@
+import ast
+
+
+X = [l.strip() for l in open('Day14/data.txt')]
+
+rock_data = [x.split(' -> ') for x in X]
+
+def makePacket(packetStr):
+    pack = ast.literal_eval(packetStr)
+    
+    return pack
+
+rockWall = []
+
+minX = 500
+maxX = 500
+maxY = 0
+for pair in rock_data:
+    rockWall.append([])
+    for packet in pair:
+        rockWall[-1].append(makePacket(packet))
+        for wall in rockWall[-1]:
+            if (wall[0] > maxX):
+                maxX = wall[0]
+            if (wall[0] < minX):
+                minX = wall[0]
+            if (wall[1] > maxY):
+                maxY = wall[1]
+        
+        
+# for sd in rockWall:
+#     print(sd)
+    
+# print(minX, maxX, 0, maxY)
+
+def makeMap(rockWall, X, Y):
+    newMap = []
+    for i in range(0, Y+1):
+        newMap.append([])
+        for i in range(0, X+1):
+            newMap[-1].append('.')
+            
+    for wallSeg in rockWall:
+        for id in range(1,len(wallSeg)):
+            xDif = wallSeg[id-1][0] - wallSeg[id][0]
+            xStep = 1
+            if xDif == 0:
+                xEnd = wallSeg[id][0] + 1
+            else:
+                xEnd =  wallSeg[id][0]
+                if(xDif > 0):
+                    xStep = -1
+            
+            yDif = wallSeg[id-1][1] - wallSeg[id][1]
+            yStep = 1
+            if yDif == 0:
+                yEnd = wallSeg[id][1] + 1
+            else:
+                yEnd = wallSeg[id][1]
+                if(yDif > 0):
+                    yStep = -1
+            for x in range(wallSeg[id-1][0], xEnd, xStep):
+                for y in range(wallSeg[id-1][1], yEnd, yStep):
+                    newMap[y][x] = 'X'
+                    
+        newMap[wallSeg[-1][1]][wallSeg[-1][0]] = 'X'
+            
+    return newMap
+
+caveMap = makeMap(rockWall, maxX, maxY)
+
+# for y in caveMap:
+#     for x in range(493, maxX+1):
+#         print(y[x], sep='', end='')
+#     print()
+    
+def dropSand(caveMap, sand):
+    if caveMap[sand[1]][sand[0]] != '.':
+        return False, (0,0)
+    if sand[1]+1 >= len(caveMap):
+        return False, (0,0)
+    
+    if caveMap[sand[1]+1][sand[0]] == '.':
+        return dropSand(caveMap, (sand[0], sand[1]+1))
+    
+    elif sand[0] - 1 < 0:
+        return False, (0,0)
+    elif caveMap[sand[1]+1][sand[0]-1] == '.':
+        return dropSand(caveMap, (sand[0]-1, sand[1]+1))
+    elif sand[0] + 1 >= len(caveMap[0]):
+        return False, (0,0)
+    elif caveMap[sand[1]+1][sand[0]+1] == '.':
+        return dropSand(caveMap, (sand[0]+1, sand[1]+1))
+    
+    return True, sand
+    
+    
+ 
+def doTheThing(myMap): 
+    fallingSand = True
+    sandCount = 0
+    while fallingSand:
+        inCave, sandCoor = dropSand(myMap, (500,0))
+        
+        if not inCave:
+            fallingSand = False
+        else:
+            myMap[sandCoor[1]][sandCoor[0]] = 'o' 
+            sandCount +=1 
+        
+        
+    # for y in caveMap:
+    #     for x in range(450, maxX+1):
+    #         print(y[x], sep='', end='')
+    #     print()
+    # print()
+    # print()
+    
+    return sandCount, myMap   
+    
+    # input()
+    
+print("Part 1:", doTheThing(caveMap)[0])
+
+floorCaveMap = makeMap(rockWall, maxX + maxY, maxY+2)
+
+for i in range(len(floorCaveMap[0])):
+    floorCaveMap[-1][i] = 'X'
+    
+# for y in floorCaveMap:
+#     for x in range(450, maxX+maxY):
+#         print(y[x], sep='', end='')
+#     print()
+
+ans, jacobsDumbThing = doTheThing(floorCaveMap)
+print("Part 2:", ans)
+
+# for y in jacobsDumbThing:
+#     for x in range(450, maxX+maxY):
+#         print(y[x], sep='', end='')
+#     print()
+    
